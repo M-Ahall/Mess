@@ -492,6 +492,7 @@ function deletedSystem(system) { //{{{
 	if(_system == system.Id) {
 		$('#entries .log-entry').remove();
 		_system = null;
+		document.title = 'Mess';
 	}
 	$(`.system[x-system-id=${system.Id}]`).remove();
 } //}}}
@@ -502,8 +503,9 @@ function renamedSystem(groupId, system) { //{{{
 
 function selectSystem(sysId) { //{{{
 	sysId = parseInt(sysId);
+	_system = sysId;
 	system = _systems[sysId];
-	document.title = `${system.Name} - DMM`;
+	document.title = `${system.Name} - Mess`;
 	$('[x-system-id]').removeClass('selected');
 	$(`[x-system-id=${sysId}]`).addClass('selected');
 	$('#entry-data').html('');
