@@ -284,9 +284,16 @@ func dbSystemEntries(systemId int) (entries []*LogEntry, err error) {
 	return
 }
 func dbAddLog(entry *LogEntry) error {
-	data, err := base64.StdEncoding.DecodeString(entry.Data)
-	if err != nil {
-		return err
+	var data []byte
+	var err error
+
+	if entry.DataBase64 {
+		data, err = base64.StdEncoding.DecodeString(entry.Data)
+		if err != nil {
+			return err
+		}
+	} else {
+		data = []byte(entry.Data)
 	}
 
 	rows, err := db.Query(`

@@ -334,7 +334,10 @@ function addEntry(entry) { //{{{
 	if(entry.SystemId != _system)
 		return false;
 
-	entry.Data = Base64.decode(entry.Data);
+	if(entry.DataBase64) {
+		entry.Data = Base64.decode(entry.Data);
+	}
+
 	_entries[entry.Id] = entry;
 
 	match = entry.Time.match(/^(?<date>\d{4}-\d{2}-\d{2})T(?<time>\d\d:\d\d:\d\d)\.(?<fractions>\d+)Z$/);

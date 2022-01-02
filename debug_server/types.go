@@ -14,15 +14,16 @@ type System struct {
 }
 
 type LogEntry struct {
-	Id        int `json:",omitempty"`
-	SystemId  int `db:"system_id"`
-	Time      string
-	Type      string
-	Context   string
-	Data      string
-	Viewed    bool
-	Backtrace string
-	Important bool
+	Id         int `json:",omitempty"`
+	SystemId   int `db:"system_id"`
+	Time       string
+	Type       string
+	Context    string
+	Data       string
+	DataBase64 bool
+	Viewed     bool
+	Backtrace  string
+	Important  bool
 }
 
 // A client request, parsed first to know how to
