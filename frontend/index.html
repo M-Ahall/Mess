@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+		<title>DMM</title>
+
+		<link rel="stylesheet" href="css/template.css">
+		<link rel="stylesheet" href="css/switch.css">
+		<link rel="stylesheet" href="css/menu.css">
+		<link rel="stylesheet" href="css/index.css">
+
+		<script type="text/javascript" src="js/lib/jquery-3.6.0.min.js"></script>
+		<script type="text/javascript" src="js/lib/jquery.visible.min.js"></script>
+		<script type="text/javascript" src="js/lib/base64.js"></script>
+		<script type="text/javascript" src="js/lib/clipboard.min.js"></script>
+
+		<script type="text/javascript" src="js/socket.js"></script>
+		<script type="text/javascript" src="js/menu.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+
+		<script type="text/javascript">
+			let authenticationToken = localStorage.getItem('authenticationToken');
+			if(authenticationToken === null) {
+				location.href = 'login.html';
+			}
+		</script>
+	</head>
+	<body>
+
+		<div id="connection-closed">
+			<div class="dialog">
+				Connection to server closed.
+			</div>
+		</div>
+
+		<div id="layout" onmouseup="resizeEntriesStop()">
+			<div id="header">
+				<div class="title"><img src="images/logo.svg" style="height: 120px; margin-bottom: -8px;"></div>
+				<div class="controls">
+					<div style="float: left;">
+						<label class="switch">
+							<input type="checkbox" id="tail-log" checked>
+							<span class="slider"></span>
+						</label>
+						<label for="tail-log">&nbsp;Tail log</label>
+						<div style="height: 12px;"></div>
+
+						<label class="switch">
+							<input type="checkbox" id="show-backtrace" onChange="toggleBacktrace()" checked>
+							<span class="slider"></span>
+						</label>
+						<label for="show-backtrace">&nbsp;Show backtrace</label><br>
+						<div style="height: 12px;"></div>
+
+						<label class="switch">
+							<input type="checkbox" id="show-date" onChange="toggleDate()">
+							<span class="slider"></span>
+						</label>
+						<label for="show-date">&nbsp;Show date</label>
+					</div>
+					<div style="float: left; margin-left: 16px;">
+						<input type="submit" value="Toggle important" style="width: 100%; margin-bottom: 8px;" onClick="toggleImportant()"><br>
+						<input type="submit" value="Mark seen"        style="width: 100%;"                     onClick="markSelectedEntriesSeen()">
+					</div>
+					<div style="float: left; margin-left: 16px;">
+						<input type="submit" value="Delete"     style="width: 100%; margin-bottom: 8px;" onClick="deleteSelectedEntries()"><br>
+						<input type="submit" value="Separator"  style="width: 100%;"                     onClick="insertSeparator()">
+					</div>
+					<div style="float: left; margin-left: 16px">
+						<input type="submit" value="Logout"       style="width: 100%; margin-bottom: 8px;" onClick="logout()"><br>
+						<input type="submit" value="Create group" style="width: 100%;"                     onClick="createGroup()">
+					</div>
+				</div>
+				<div class="notification"></div>
+			</div>
+
+			<div id="groups"></div>
+			<div id="entries">
+				<table class="entries">
+					<tr>
+						<th>ID</th>
+						<th>Date</th>
+						<th>Time</th>
+						<th>Type</th>
+						<th>Context</th>
+					</tr>
+				</table>
+			</div>
+
+			<div id="entry-data"></div>
+			<img id="entry-data-copy" src="images/icons/clipboard.png">
+
+			<div id="entry-backtrace"></div>
+			<img id="entry-backtrace-copy" src="images/icons/clipboard.png">
+
+			<div id="resize-entries" onmousedown="resizeEntriesStart()"></div>
+		</div>
+
+		<div class="menu" x-menu="group">
+			<div class="item"           onClick="menuClose().then(renameGroup);">Rename group</div>
+			<div class="item separator" onClick="menuClose().then(deleteGroup);">Delete group</div>
+			<div class="item"           onClick="menuClose().then(createSystem);">Create system</div>
+		</div>
+
+		<div class="menu" x-menu="system">
+			<div class="item" id="copy-log-template" onClick="menuClose()">Copy log template</div>
+			<div class="item" onClick="menuClose().then(renameSystem);">Rename system</div>
+			<div class="item" onClick="menuClose().then(deleteSystem);">Delete system</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,46 @@
+.menu-blackout {
+  display: none;
+  position: fixed;
+  z-index: 4095;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.menu[x-menu] {
+  display: none;
+  position: absolute;
+  z-index: 4096;
+  left: 0px;
+  top: 0px;
+  margin: 0;
+  padding: 0;
+  border: 2px solid #c32e42;
+  background-color: #fff;
+  color: #c32e42;
+  box-shadow: 6px 4px 5px 0px rgba(0, 0, 0, 0.25);
+}
+.menu[x-menu] .item {
+  padding: 16px;
+  border-bottom: 1px solid #aaa;
+  cursor: pointer;
+  user-select: none;
+  color: #c32e42;
+}
+.menu[x-menu] .item:hover {
+  box-shadow: inset 2px 2px 2px 0px rgba(0, 0, 0, 0.15);
+  background-color: #eeeae4;
+}
+.menu[x-menu] .item.separator {
+  border-bottom: 2px solid #c32e42;
+}
+.menu[x-menu] .close {
+  margin-top: 12px;
+  text-align: center;
+  color: #330c11;
+  user-select: none;
+}
+.menu[x-menu] .close:hover {
+  color: #c32e42;
+}
