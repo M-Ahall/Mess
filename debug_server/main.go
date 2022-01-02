@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 const VERSION = "0.1.0";
@@ -77,6 +78,17 @@ func main() {
 		var logEntry LogEntry
 		var body []byte
 
+		// Get host sending log to us.
+		forwardHeader := r.Header.Get("X-Forwarded-For")
+		if forwardHeader != "" {
+			logEntry.RemoteHost = forwardHeader
+		} else {
+			// Port isn't necessary.
+			components := strings.Split(r.RemoteAddr, ":")
+			logEntry.RemoteHost = components[0]
+		}
+
+		// Read request body and parse.
 		body, err = io.ReadAll(r.Body)
 		if err != nil {
 			logRequest(r, "body", "%s", err)
@@ -88,6 +100,7 @@ func main() {
 			return
 		}
 
+		// Store log in database.
 		err = dbAddLog(&logEntry)
 		if err != nil {
 			logRequest(r, "log", "%s", err)
@@ -99,6 +112,8 @@ func main() {
 			w.Write(out)
 			return
 		}
+
+		// Log to console.
 		logRequest(
 			r,
 			"log",
@@ -108,7 +123,7 @@ func main() {
 			logEntry.Context,
 		)
 
-
+		// Display
 		msg := ClientResponse{
 			Op: "LogEntry",
 			Data: LogEntryPush{

@@ -285,6 +285,7 @@ func (wsConn WsConnection) SystemEntries(sysId int) (entries []*LogEntry, err er
 	// Data is encoded base64 as it could potentially contain binary data.
 	for _, entry := range entries {
 		entry.Data = base64.StdEncoding.EncodeToString([]byte(entry.Data))
+		entry.DataBase64 = true
 	}
 
 	return

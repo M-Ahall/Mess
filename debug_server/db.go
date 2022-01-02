@@ -262,7 +262,8 @@ func dbSystemEntries(systemId int) (entries []*LogEntry, err error) {
 			"data",
 			viewed,
 			backtrace,
-			important
+			important,
+			remote_host
 		FROM "log"
 		WHERE
 			system_id = $1
@@ -303,9 +304,10 @@ func dbAddLog(entry *LogEntry) error {
 			"context",
 			"data",
 			viewed,
-			backtrace
+			backtrace,
+			remote_host
 		)
-		VALUES($1, $2, $3, $4, $5, $6)
+		VALUES($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, "time";
 		`,
 		entry.SystemId,
@@ -315,6 +317,7 @@ func dbAddLog(entry *LogEntry) error {
 		entry.Type == "SEPARATOR", // always viewed to not screw up
 		                           // displayed count.
 		entry.Backtrace,
+		entry.RemoteHost,
 	)
 	if err != nil {
 		return err

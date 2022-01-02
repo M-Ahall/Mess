@@ -24,6 +24,7 @@ type LogEntry struct {
 	Viewed     bool
 	Backtrace  string
 	Important  bool
+	RemoteHost string `db:"remote_host"`
 }
 
 // A client request, parsed first to know how to
