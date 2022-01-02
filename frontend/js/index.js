@@ -513,6 +513,7 @@ function selectSystem(sysId) { //{{{
 	$(`[x-system-id=${sysId}]`).addClass('selected');
 	$('#entry-data').html('');
 	$('#entry-backtrace').html('');
+	$('#entry-info').html('');
 
 	$('table.entries .log-entry').remove();
 
@@ -575,6 +576,7 @@ function deleteEntry(entryId) { //{{{
 	if(entryId == $('.log-entry.show').attr('x-entry-id')) {
 		$('#entry-data').html('');
 		$('#entry-backtrace').html('');
+		$('#entry-info').html('');
 	}
 
 	let el = $(`[x-entry-id=${entryId}]`);

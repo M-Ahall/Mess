@@ -27,7 +27,7 @@
   position: relative;
   height: 100vh;
   grid-template-columns: min-content [entries] 500px 3px 1fr;
-  grid-template-rows: 128px 0.5fr 0.5fr 64px;
+  grid-template-rows: 128px 0.5fr 0.5fr 70px;
   grid-template-areas: "header header header header" "groups log-entries resize-entries entry-data" "groups log-entries resize-entries entry-backtrace" "groups log-entries resize-entries entry-info";
 }
 #layout.without-backtrace {
