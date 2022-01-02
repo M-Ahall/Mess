@@ -788,6 +788,7 @@ function tailLog() { //{{{
 function showData(entryId) { //{{{
 	$('#entry-data').html(_entries[entryId].Data);
 	$('#entry-backtrace').html(_entries[entryId].Backtrace);
+	$('#entry-info').html(`Entry added from <span class="remote-host">${_entries[entryId].RemoteHost}</span>`);
 	$('.log-entry').removeClass('show');
 
 	let el = $(`[x-entry-id=${entryId}]`);

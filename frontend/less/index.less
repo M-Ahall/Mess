@@ -34,18 +34,21 @@
 	grid-template-columns: min-content [entries] 500px 3px 1fr;
 	grid-template-rows:
 		128px
-		0.6fr
-		0.4fr;
+		0.5fr
+		0.5fr
+		64px;
 	grid-template-areas:
 		"header header header header"
 		"groups log-entries resize-entries entry-data"
-		"groups log-entries resize-entries entry-backtrace";
+		"groups log-entries resize-entries entry-backtrace"
+		"groups log-entries resize-entries entry-info";
 
 	&.without-backtrace {
 		grid-template-areas:
 		"header header header header"
 		"groups log-entries resize-entries entry-data"
-		"groups log-entries resize-entries entry-data";
+		"groups log-entries resize-entries entry-data"
+		"groups log-entries resize-entries entry-info";
 	}
 }
 
@@ -118,9 +121,27 @@
 	}
 }
 
+#entry-info {
+	grid-area: entry-info;
+	border-top: 1px solid #000;
+
+	&:before {
+		content: "Info";
+		display: block;
+		color: desaturate(darken(@primary, 10%), 15%);
+		font-weight: bold;
+		font-size: 10px;
+		margin-bottom: 8px;
+	}
+
+	.remote-host {
+		color: @primary;
+	}
+}
 
 #entry-data,
-#entry-backtrace {
+#entry-backtrace,
+#entry-info {
 	white-space: pre;
 	padding: 16px;
 	font-family: monospace;
