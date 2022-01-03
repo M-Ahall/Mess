@@ -1,8 +1,17 @@
-var _socketEndpoint = `wss://${window.location.hostname}/ws`;
+var _socketEndpoint = '';
 var _socket = null;
 var _socketRequestNum = 0;
 
 function socketConnect() {
+	let proto = '';
+	switch(location.protocol) {
+		case 'http:':  proto = 'ws';  break;
+		case 'https:': proto = 'wss'; break;
+		default:
+			alert('Unknown protocol, aborting.');
+	}
+	_socketEndpoint = `${proto}://${location.host}/ws`
+
 	_socket = new WebSocket(_socketEndpoint)
 	_socket.onopen = function() {
 		console.log("socket connected");
