@@ -111,8 +111,10 @@ function msgHandler(msg) { //{{{
 	}
 } //}}}
 function keyHandler(evt) { //{{{
-	let handled = true;
+	if(evt.target.id == 'filter')
+		return;
 
+	let handled = true;
 	switch(evt.key) {
 		case "a":
 			selectAllEntries();
@@ -155,6 +157,10 @@ function keyHandler(evt) { //{{{
 
 		case "Y":
 			$('#entry-backtrace-copy').click();
+			break;
+
+		case "/":
+			$('#filter').focus();
 			break;
 
 		case "{":
@@ -355,11 +361,13 @@ function addEntry(entry) { //{{{
 				<td colspan=5></td>
 			</tr>
 		`);
-	else
+	else {
+		let filter = (entry.Type+' '+entry.Context).toLowerCase();
 		$('table.entries tr:first-child').after(`
 			<tr
 				class="log-entry ${entry.Viewed ? '' : 'new'} ${entry.Important ? 'important' : ''}"
 				x-entry-id="${entry.Id}"
+				x-filter="${filter}"
 				onClick="clickEntry(event, ${entry.Id})"
 			>
 				<td>${entry.Id}</td>
@@ -369,6 +377,7 @@ function addEntry(entry) { //{{{
 				<td>${entry.Context ? entry.Context : '&nbsp'}</td>
 			</tr>
 		`);
+	}
 
 	return true;
 } //}}}
@@ -825,6 +834,12 @@ function showData(entryId) { //{{{
 		()=>socketSend(req),
 		1000,
 	);
+} //}}}
+function filter() { //{{{
+	let f = $('#filter').val();
+	$('.log-entry').removeClass('filtered');
+	if(f != "")
+		$(`.log-entry:not([x-filter*=${f}])`).addClass('filtered');
 } //}}}
 
 function getLayoutEntriesWidth() { //{{{
