@@ -31,14 +31,13 @@ func init() {
 }
 
 type Config struct {
-	Log struct {
-		RequestData bool
-	}
-
-	Web struct {
+	Server struct {
 		Host   string
 		Port   int
-		Domain string
+	}
+
+	CORS struct {
+		OriginDomain string
 	}
 
 	Postgresql struct {
@@ -47,6 +46,10 @@ type Config struct {
 		User string
 		Pass string
 		Name string
+	}
+
+	Log struct {
+		RequestData bool
 	}
 }
 
@@ -69,17 +72,18 @@ func Parse() (err *ConfigError) {
 		err.Err = errors.New("Env variable HOME is not set")
 		return
 	}
-	filename := fmt.Sprintf("%s/.config/debug_server/config.yaml", home)
+	filename := fmt.Sprintf("%s/.config/mess/config.yaml", home)
 
 	template := new(Config)
 	template.Log.RequestData = true
-	template.Web.Host = "127.0.0.1"
-	template.Web.Port = 9001
-	template.Web.Domain = "example.com"
+	template.Server.Host = "127.0.0.1"
+	template.Server.Port = 9001
+	template.CORS.OriginDomain = "example.com"
 	template.Postgresql.Host = "127.0.0.1"
 	template.Postgresql.Port = 5432
 	template.Postgresql.User = "postgres"
-	template.Postgresql.Name = "portal"
+	template.Postgresql.Pass = "humhum"
+	template.Postgresql.Name = "mess"
 
 	yamlFromFile, ferr := ioutil.ReadFile(filename)
 	if ferr != nil {

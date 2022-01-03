@@ -20,14 +20,7 @@ var (
 
 		// CheckOrigin is to match DOMAIN constant.
 		// Use X-Forwarded-Server if behind proxy.
-		CheckOrigin: func(r *http.Request) bool {
-			host := r.Header.Get("X-Forwarded-Server")
-			if host == "" {
-				components := strings.Split(r.Host, ":")
-				host = components[0]
-			}
-			return host == config.Web.Domain
-		},
+		CheckOrigin: validateOrigin,
 	}
 )
 
@@ -44,6 +37,14 @@ type WsConnection struct {
 	RemoteHost string
 }
 
+func validateOrigin(r *http.Request) bool {
+	host := r.Header.Get("X-Forwarded-Server")
+	if host == "" {
+		components := strings.Split(r.Host, ":")
+		host = components[0]
+	}
+	return host == config.CORS.OriginDomain
+}
 func NewWsConnection(w http.ResponseWriter, r *http.Request) (conn WsConnection, err error) {
 	var newUUID uuid.UUID
 

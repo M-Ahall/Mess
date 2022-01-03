@@ -133,7 +133,7 @@ func main() {
 		connectionManager.Broadcast(msg)
 	})
 
-	listen := fmt.Sprintf("%s:%d", config.Web.Host, config.Web.Port)
+	listen := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
 	fmt.Printf("Listening on %s\n\n", listen)
 	http.ListenAndServe(listen, nil)
 }
