@@ -881,7 +881,7 @@ $(document).ready(()=>{
 				systemId: parseInt(_menu_selected_id),
 				type: "",
 				context: "",
-				data: "<base64>",
+				data: "",
 			}, null, 4);
 		}
 	});
