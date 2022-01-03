@@ -38,17 +38,17 @@
 		0.5fr
 		70px;
 	grid-template-areas:
-		"header header header header"
-		"groups log-entries resize-entries entry-data"
-		"groups log-entries resize-entries entry-backtrace"
-		"groups log-entries resize-entries entry-info";
+		"header   header header header"
+		"groups   log-entries resize-entries entry-data"
+		"groups   log-entries resize-entries entry-backtrace"
+		"sys-info log-entries resize-entries entry-info";
 
 	&.without-backtrace {
 		grid-template-areas:
-		"header header header header"
-		"groups log-entries resize-entries entry-data"
-		"groups log-entries resize-entries entry-data"
-		"groups log-entries resize-entries entry-info";
+		"header   header header header"
+		"groups   log-entries resize-entries entry-data"
+		"groups   log-entries resize-entries entry-data"
+		"sys-info log-entries resize-entries entry-info";
 	}
 }
 
@@ -82,17 +82,35 @@
 
 #groups {
 	grid-area: groups;
-	border-right: 3px solid @primary;
 	min-width: 128px;
+	overflow-y: auto;
+}
+
+#system-info {
+	grid-area: sys-info;
+	border-top: 1px solid #000;
+	font-family: monospace;
+	padding: 16px;
+	white-space: nowrap;
+
+	&:before {
+		content: "System ID";
+		display: block;
+		color: desaturate(darken(@primary, 10%), 15%);
+		font-weight: bold;
+		font-size: 10px;
+		margin-bottom: 8px;
+	}
 }
 
 #entries {
 	grid-area: log-entries;
 	overflow-y: auto;
 	overflow-x: auto;
+	border-left: 3px solid @primary;
 
 	#filter {
-		width: 100%;
+		width: calc(100% - 8px - 8px);
 		border: none;
 		border-bottom: 2px solid @primary;
 		font-size: 16px;

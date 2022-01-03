@@ -431,6 +431,30 @@ function renamedGroup(group) { //{{{
 	});
 } //}}}
 
+function selectSystem(sysId) { //{{{
+	sysId = parseInt(sysId);
+	_system = sysId;
+	system = _systems[sysId];
+	document.title = `${system.Name} - Mess`;
+	$('[x-system-id]').removeClass('selected');
+	$(`[x-system-id=${sysId}]`).addClass('selected');
+	$('#entry-data').html('');
+	$('#entry-backtrace').html('');
+	$('#entry-info').html('');
+	$('#system-info').html(sysId);
+
+	$('table.entries .log-entry').remove();
+
+	// System entries are added one by one and changing the unseen entries
+	// count. Resetting system count first makes it right.
+	$(`[x-system-id=${sysId}] .unseen`).html('');
+
+	let req= {
+		op: "SystemEntries",
+		systemId: sysId,
+	};
+	socketSend(req);
+} //}}}
 function addSystem(groupId, newSystem) { //{{{
 	// Place group in the correct, alphabetical place.
 	var placeBefore = null;
@@ -503,6 +527,7 @@ function deleteSystem() { //{{{
 function deletedSystem(system) { //{{{
 	if(_system == system.Id) {
 		$('#entries .log-entry').remove();
+		$('#system-info').html('');
 		_system = null;
 		document.title = 'Mess';
 	}
@@ -513,29 +538,6 @@ function renamedSystem(groupId, system) { //{{{
 	addSystem(groupId, system);
 } //}}}
 
-function selectSystem(sysId) { //{{{
-	sysId = parseInt(sysId);
-	_system = sysId;
-	system = _systems[sysId];
-	document.title = `${system.Name} - Mess`;
-	$('[x-system-id]').removeClass('selected');
-	$(`[x-system-id=${sysId}]`).addClass('selected');
-	$('#entry-data').html('');
-	$('#entry-backtrace').html('');
-	$('#entry-info').html('');
-
-	$('table.entries .log-entry').remove();
-
-	// System entries are added one by one and changing the unseen entries
-	// count. Resetting system count first makes it right.
-	$(`[x-system-id=${sysId}] .unseen`).html('');
-
-	let req= {
-		op: "SystemEntries",
-		systemId: sysId,
-	};
-	socketSend(req);
-} //}}}
 function clickEntry(evt, entryId) { //{{{
 	if(!evt.shiftKey)
 		selectEntry(entryId);
