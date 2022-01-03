@@ -307,6 +307,7 @@ function addGroups(groups) { //{{{
 
 	});
 } //}}}
+
 function addGroup(newGroup) { //{{{
 	// Place group in the correct, alphabetical place.
 	var placeBefore = null;
@@ -336,52 +337,6 @@ function addGroup(newGroup) { //{{{
 		$(placeBefore).parent().before(div);
 	}
 } //}}}
-function addEntry(entry) { //{{{
-	if(entry.SystemId != _system)
-		return false;
-
-	if(entry.DataBase64) {
-		entry.Data = Base64.decode(entry.Data);
-	}
-
-	_entries[entry.Id] = entry;
-
-	match = entry.Time.match(/^(?<date>\d{4}-\d{2}-\d{2})T(?<time>\d\d:\d\d:\d\d)\.(?<fractions>\d+)Z$/);
-	let date = match.groups.date;
-	let time = match.groups.time;
-	let fractions = match.groups.fractions;
-
-	if(entry.Type == 'SEPARATOR')
-		$('table.entries tr:first-child').after(`
-			<tr
-				class="log-entry separator"
-				x-entry-id="${entry.Id}"
-				onClick="clickEntry(event, ${entry.Id})"
-			>
-				<td colspan=5></td>
-			</tr>
-		`);
-	else {
-		let filter = (entry.Type+' '+entry.Context).toLowerCase();
-		$('table.entries tr:first-child').after(`
-			<tr
-				class="log-entry ${entry.Viewed ? '' : 'new'} ${entry.Important ? 'important' : ''}"
-				x-entry-id="${entry.Id}"
-				x-filter="${filter}"
-				onClick="clickEntry(event, ${entry.Id})"
-			>
-				<td>${entry.Id}</td>
-				<td>${date}</td>
-				<td>${time}</td>
-				<td>${entry.Type ? entry.Type : '&nbsp;'}</td>
-				<td>${entry.Context ? entry.Context : '&nbsp'}</td>
-			</tr>
-		`);
-	}
-
-	return true;
-} //}}}
-
 function createGroup() { //{{{
 	let name = prompt("Group name:");
 	if(name === null)
@@ -538,6 +493,51 @@ function renamedSystem(groupId, system) { //{{{
 	addSystem(groupId, system);
 } //}}}
 
+function addEntry(entry) { //{{{
+	if(entry.SystemId != _system)
+		return false;
+
+	if(entry.DataBase64) {
+		entry.Data = Base64.decode(entry.Data);
+	}
+
+	_entries[entry.Id] = entry;
+
+	match = entry.Time.match(/^(?<date>\d{4}-\d{2}-\d{2})T(?<time>\d\d:\d\d:\d\d)\.(?<fractions>\d+)Z$/);
+	let date = match.groups.date;
+	let time = match.groups.time;
+	let fractions = match.groups.fractions;
+
+	if(entry.Type == 'SEPARATOR')
+		$('table.entries tr:first-child').after(`
+			<tr
+				class="log-entry separator"
+				x-entry-id="${entry.Id}"
+				onClick="clickEntry(event, ${entry.Id})"
+			>
+				<td colspan=5></td>
+			</tr>
+		`);
+	else {
+		let filter = (entry.Type+' '+entry.Context).toLowerCase();
+		$('table.entries tr:first-child').after(`
+			<tr
+				class="log-entry ${entry.Viewed ? '' : 'new'} ${entry.Important ? 'important' : ''}"
+				x-entry-id="${entry.Id}"
+				x-filter="${filter}"
+				onClick="clickEntry(event, ${entry.Id})"
+			>
+				<td>${entry.Id}</td>
+				<td>${date}</td>
+				<td>${time}</td>
+				<td>${entry.Type ? entry.Type : '&nbsp;'}</td>
+				<td>${entry.Context ? entry.Context : '&nbsp'}</td>
+			</tr>
+		`);
+	}
+
+	return true;
+} //}}}
 function clickEntry(evt, entryId) { //{{{
 	if(!evt.shiftKey)
 		selectEntry(entryId);
@@ -838,10 +838,10 @@ function showData(entryId) { //{{{
 	);
 } //}}}
 function filter() { //{{{
-	let f = $('#filter').val();
+	let f = $('#filter').val().toLowerCase().replaceAll('"', '\\"');
 	$('.log-entry').removeClass('filtered');
 	if(f != "")
-		$(`.log-entry:not([x-filter*=${f}])`).addClass('filtered');
+		$(`.log-entry:not([x-filter*="${f}"])`).addClass('filtered');
 } //}}}
 
 function getLayoutEntriesWidth() { //{{{
