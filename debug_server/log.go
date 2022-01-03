@@ -29,9 +29,13 @@ func logRequest(r *http.Request, typ, format string, params ...interface{}) {
 		remoteHost = components[0]
 	}
 
+	logRequestIp(remoteHost, typ, format, params...)
+}
+
+func logRequestIp(ip string, typ, format string, params ...interface{}) {
 	fmt.Printf(
 		"%-15s [ %36s ] %13s | ",
-		remoteHost,
+		ip,
 		"",
 		typ,
 	)

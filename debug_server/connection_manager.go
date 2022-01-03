@@ -7,10 +7,12 @@ import (
 
 type ConnectionManager struct {
 	connections map[string]*WsConnection
+	broadcastQueue chan interface{}
 }
 
 func NewConnectionManager() (cm ConnectionManager) {
 	cm.connections = make(map[string]*WsConnection)
+	cm.broadcastQueue = make(chan interface{}, 65536)
 	return
 }
 
@@ -50,7 +52,6 @@ func (cm *ConnectionManager) Read(wsConn *WsConnection) ([]byte, bool) {
 	}
 	return requestData, true
 }
-
 func (cm *ConnectionManager) Send(wsConn *WsConnection, msg interface{}) (ok bool) {
 	err := wsConn.Conn.WriteJSON(msg)
 	if err != nil {
@@ -61,7 +62,15 @@ func (cm *ConnectionManager) Send(wsConn *WsConnection, msg interface{}) (ok boo
 }
 
 func (cm *ConnectionManager) Broadcast(msg interface{}) {
-	for _, wsConn := range cm.connections {
-		cm.Send(wsConn, msg)
+	cm.broadcastQueue <- msg
+}
+func (cm *ConnectionManager) BroadcastLoop() {
+	for {
+		msg := <-cm.broadcastQueue
+		for _, wsConn := range cm.connections {
+			cm.Send(wsConn, msg)
+		}
 	}
 }
+
+// vim: foldmethod=syntax foldnestmax=1

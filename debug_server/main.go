@@ -11,6 +11,15 @@ import (
 
 const VERSION = "0.1.0";
 
+var (
+	logQueue chan LogEntry
+	connectionManager ConnectionManager
+)
+
+func init() {
+	logQueue = make(chan LogEntry, 65536)
+}
+
 func main() {
 	fmt.Printf("Debug Websocket Server %s\n", VERSION)
 
@@ -19,7 +28,14 @@ func main() {
 
 	// The Connection Manager handles all outgoing communication to have a
 	// single point where we can make sure dead connections are pruned.
-	connectionManager := NewConnectionManager()
+	connectionManager = NewConnectionManager()
+
+	// logEntryLoop adds entries to database and puts them into the
+	// broadcast loop.
+	go logEntryLoop()
+
+	// BroadcastLoop broadcasts messages put into the broadcast queue.
+	go connectionManager.BroadcastLoop()
 
 	// ws endpoint handles all client requests via JSON.
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
@@ -100,22 +116,38 @@ func main() {
 			return
 		}
 
+		/* Queue the log message for storing into the database and then
+		 * broadcasting it to everyone connected, saving the sending
+		 * app some time when this is returning sooner. */
+		logQueue <- logEntry
+
+		out, _ := json.Marshal(ClientResponse{
+			Op: "log",
+		})
+		w.Write(out)
+	})
+
+	listen := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
+	fmt.Printf("Listening on %s\n\n", listen)
+	http.ListenAndServe(listen, nil)
+}
+
+func logEntryLoop() {
+	var err error
+
+	for {
+		logEntry := <-logQueue
+
 		// Store log in database.
 		err = dbAddLog(&logEntry)
 		if err != nil {
-			logRequest(r, "log", "%s", err)
-
-			out, _ := json.Marshal(ClientResponse{
-				Op: "log",
-				Error: err.Error(),
-			})
-			w.Write(out)
+			logRequestIp(logEntry.RemoteHost, "log", "%s", err)
 			return
 		}
 
 		// Log to console.
-		logRequest(
-			r,
+		logRequestIp(
+			logEntry.RemoteHost,
 			"log",
 			"system id: %6d, %s, %s",
 			logEntry.SystemId,
@@ -123,7 +155,7 @@ func main() {
 			logEntry.Context,
 		)
 
-		// Display
+		// Broadcast for all connected users to receive.
 		msg := ClientResponse{
 			Op: "LogEntry",
 			Data: LogEntryPush{
@@ -131,9 +163,5 @@ func main() {
 			},
 		}
 		connectionManager.Broadcast(msg)
-	})
-
-	listen := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
-	fmt.Printf("Listening on %s\n\n", listen)
-	http.ListenAndServe(listen, nil)
+	}
 }
