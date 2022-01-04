@@ -1,4 +1,4 @@
-module debug_server
+module mess_server
 
 go 1.16
 
