@@ -301,6 +301,9 @@ input[type=submit]:hover {
   background: #c32e42;
   cursor: col-resize;
 }
-.hljs {
+#entry-data.hljs {
   background: none !important;
+}
+#entry-backtrace.hljs {
+  background: #f6f6f6 !important;
 }
