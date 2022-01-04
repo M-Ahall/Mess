@@ -825,6 +825,10 @@ function showData(entryId) { //{{{
 			$('#entries')[0].scrollBy(0, (-1)*$('#entries').height()/2.0);
 	}
 
+	// Highlight data
+	// TODO - a setting for automatically highlighting data or not.
+	hljs.highlightElement($('#entry-data')[0]);
+
 	// Abort previous markSeen if any, as the timer didn't execute yet.
 	// Message marked as seen after one second.
 	if(_viewTimeout != null)

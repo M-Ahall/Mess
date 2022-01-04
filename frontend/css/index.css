@@ -301,3 +301,6 @@ input[type=submit]:hover {
   background: #c32e42;
   cursor: col-resize;
 }
+.hljs {
+  background: none !important;
+}
