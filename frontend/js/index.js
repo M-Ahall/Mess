@@ -828,6 +828,7 @@ function showData(entryId) { //{{{
 	// Highlight data
 	// TODO - a setting for automatically highlighting data or not.
 	hljs.highlightElement($('#entry-data')[0]);
+	hljs.highlightElement($('#entry-backtrace')[0]);
 
 	// Abort previous markSeen if any, as the timer didn't execute yet.
 	// Message marked as seen after one second.
