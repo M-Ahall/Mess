@@ -6,6 +6,7 @@ var _notification = null;
 var _viewTimeout = null;
 var _selectFrom = null;
 var _resizeEntries = false;
+var _hookEntryId = null;
 
 function socketConnected() { //{{{
 	// Authenticate us
@@ -49,6 +50,12 @@ function msgHandler(msg) { //{{{
 				addEntry(entry);
 				changeViewedMessages(entry, 'add');
 			});
+			if(_hookEntryId !== null) {
+				var e = _entries[parseInt(_hookEntryId)];
+				if(e !== undefined)
+					selectEntry(e.Id);
+				_hookEntryId = null;
+			}
 			break;
 
 		case 'LogEntry':
@@ -306,8 +313,8 @@ function addGroups(groups) { //{{{
 		group.Systems.forEach(sys=>{
 			addSystem(group.Id, sys);
 		});
-
 	});
+	$('#groups').addClass('initialized');
 } //}}}
 
 function addGroup(newGroup) { //{{{
@@ -508,7 +515,6 @@ function addEntry(entry) { //{{{
 	match = entry.Time.match(/^(?<date>\d{4}-\d{2}-\d{2})T(?<time>\d\d:\d\d:\d\d)\.(?<fractions>\d+)Z$/);
 	let date = match.groups.date;
 	let time = match.groups.time;
-	let fractions = match.groups.fractions;
 
 	if(entry.Type == 'SEPARATOR')
 		$('table.entries tr:first-child').after(`
@@ -526,8 +532,10 @@ function addEntry(entry) { //{{{
 			<tr
 				class="log-entry ${entry.Viewed ? '' : 'new'} ${entry.Important ? 'important' : ''}"
 				x-entry-id="${entry.Id}"
+				x-menu-id="${entry.Id}"
 				x-filter="${filter}"
 				onClick="clickEntry(event, ${entry.Id})"
+				onContextMenu="menuShow('entry', event); return false;"
 			>
 				<td>${entry.Id}</td>
 				<td>${date}</td>
@@ -890,6 +898,15 @@ $(document).ready(()=>{
 		}
 	});
 
+	new ClipboardJS('#copy-entry-link', {
+		text: ()=>{
+			var entry = _entries[_menu_selected_id];
+			var url = `${location.protocol}://${location.host}/`
+			url += `?system_id=${entry.SystemId}&entry_id=${entry.Id}`;
+			return url;
+		}
+	});
+
 	// Restore entries column width.
 	let entriesWidth = localStorage.getItem('entriesWidth');
 	if(entriesWidth)
@@ -915,6 +932,31 @@ $(document).ready(()=>{
 		showDate.prop('checked', state == 'true')
 		toggleDate();
 	}
+
+	/* When groups and systems are populated, the initialized is added to
+	 * the #groups div. It is then possible to lookup the system, retrieve
+	 * entries and possibly find the asked for entry. */
+	var initObserver = new MutationObserver(_=>{
+		// Should a specific entry be shown?
+		let params = new URLSearchParams(location.search);
+		let systemId = params.get('system_id');
+		let entryId = params.get('entry_id');
+		if(systemId !== null && entryId !== null) {
+			/* _hookEntryId will select the entry
+			 * when the entry is added after system entries are
+			 * retrieved. */
+			_hookEntryId = entryId;
+			let system = _systems[systemId];
+			if(system === undefined)
+				return;
+			selectSystem(systemId, entryId);
+		}
+	});
+	initObserver.observe(
+		$('#groups')[0],
+		{ attributes: true },
+	);
+
 });
 
 // vim: foldmethod=marker

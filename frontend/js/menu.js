@@ -5,7 +5,7 @@ function menuShow(name, pointerEvt) { //{{{
 	// This is later accessed from the menu item functions.
 	let id = $(event.target).closest('[x-menu-id]').attr('x-menu-id');
 	if(id === undefined) {
-		alert('Kunde inte hitta aktuellt ID.');
+		alert('Could not find the x-menu-id attribute.');
 		return;
 	}
 	_menu_selected_id = id;
