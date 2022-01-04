@@ -138,7 +138,9 @@ function keyHandler(evt) { //{{{
 
 		case "t":
 			let tailLog = $('#tail-log');
-			tailLog.prop('checked', !tailLog.is(':checked'))
+			let state = !tailLog.is(':checked');
+			tailLog.prop('checked', state)
+			localStorage.setItem('tailLog', state);
 			break;
 
 		case "d":
@@ -680,11 +682,11 @@ function updateImportantState(updatedEntry) { //{{{
 } //}}}
 function toggleDate() { //{{{
 	let checked = $('#show-date').is(':checked');
-	if(checked) {
+	if(checked)
 		$('table.entries').addClass('date');
-	} else {
+	else
 		$('table.entries').removeClass('date');
-	}
+	localStorage.setItem('showDate', checked);
 } //}}}
 
 function toggleBacktrace() { //{{{
@@ -898,6 +900,20 @@ $(document).ready(()=>{
 	switch(backtrace) {
 		case 'show': showBacktrace(); break;
 		case 'hide': hideBacktrace(); break;
+	}
+
+	// Restore tail log state
+	let tailLog = $('#tail-log');
+	var state = localStorage.getItem('tailLog');
+	if(state !== null)
+		tailLog.prop('checked', state == 'true')
+
+	// Restore date state
+	let showDate = $('#show-date');
+	state = localStorage.getItem('showDate');
+	if(state !== null) {
+		showDate.prop('checked', state == 'true')
+		toggleDate();
 	}
 });
 
