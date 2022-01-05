@@ -26,20 +26,12 @@
 						No connection to socket!
 						<div class="socket-address"></div>
 					</div>
-					<div class="widget"><input type="text"     name="username" placeholder="Username"></div>
-					<div class="widget"><input type="password" name="password" placeholder="Password"></div>
-					<div class="widget"><input type="submit" value="Login" onClick="getAuthenticationToken(); return false;"></div>
-					<div class="widget"><div id="failed">&nbsp;</div></div>
+					<div class="widget login"><input type="text"     name="username" placeholder="Username"></div>
+					<div class="widget login"><input type="password" name="password" placeholder="Password"></div>
+					<div class="widget login"><input type="submit" value="Login" onClick="getAuthenticationToken(); return false;"></div>
+					<div class="widget login"><div id="failed">&nbsp;</div></div>
 				</form>
 			</div>
 		</div>
-		<script type="text/javascript">
-			$(document).ready(()=>{
-				$('[name=username]').focus();
-			});
-
-			socketOnClose(loginSocketClosed);
-			socketConnect();
-		</script>
 	</body>
 </html>

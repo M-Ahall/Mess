@@ -1,7 +1,14 @@
-function loginSocketClosed() {
+var _socket = null;
+
+function socketOpened() {
+	$('.widget.login').show();
+	$('[name=username]').focus();
+}
+
+function socketClosed() {
 	$('.widget').hide();
 	$('#connection-closed').show();
-	$('.socket-address').html(socketAddr());
+	$('.socket-address').html(MessSocket.domainWsAddress());
 }
 
 function getAuthenticationToken() {
@@ -10,10 +17,11 @@ function getAuthenticationToken() {
 		username: $('[name="username"]').val(),
 		password: $('[name="password"]').val(),
 	}
-	socketSend(req)
+	_socket.send(req);
 }
 
-function msgHandler(msg) {
+function msgHandler(evt) {
+	let msg = JSON.parse(evt.data)
 	switch(msg.Op) {
 		case 'Login':
 			if(msg.Data.Token == '') {
@@ -30,3 +38,11 @@ function msgHandler(msg) {
 			console.log(msg);
 	}
 }
+
+$(document).ready(()=>{
+	_socket = new MessSocket();
+	_socket.addHook('open', socketOpened);
+	_socket.addHook('close', socketClosed);
+	_socket.addHook('error', socketClosed);
+	_socket.addHook('message', msgHandler);
+});

@@ -14,16 +14,15 @@ function socketConnected() { //{{{
 		op: "Authenticate",
 		token: localStorage.getItem('authenticationToken'),
 	}
-	socketSend(req);
+	_socket.send(req);
 } //}}}
-function requestGroupsAndSystems() { //{{{
-		// Request groups, systems and unseen count.
-		let req = {
-			op: "Groups",
-		}
-		socketSend(req);
+function socketClosed() { //{{{
+	menuClose();
+	$('#connection-closed').show();
 } //}}}
-function msgHandler(msg) { //{{{
+function msgHandler(evt) { //{{{
+	let msg = JSON.parse(evt.data)
+
 	if(msg.Error) {
 		alert(msg.Error);
 		return;
@@ -298,6 +297,13 @@ function keyHandler(evt) { //{{{
 	}
 } //}}}
 
+function requestGroupsAndSystems() { //{{{
+		// Request groups, systems and unseen count.
+		let req = {
+			op: "Groups",
+		}
+		_socket.send(req);
+} //}}}
 function addGroups(groups) { //{{{
 	// Remove everything and start over.
 	// All current groups are provided.
@@ -354,7 +360,7 @@ function createGroup() { //{{{
 		op: 'CreateGroup',
 		name: name,
 	}
-	socketSend(req);
+	_socket.send(req);
 } //}}}
 function deleteGroup() { //{{{
 	let group = _groups[_menu_selected_id];
@@ -364,7 +370,7 @@ function deleteGroup() { //{{{
 		op: 'DeleteGroup',
 		groupId: parseInt(group.Id),
 	}
-	socketSend(req);
+	_socket.send(req);
 } //}}}
 function deletedGroup(delGroup) { //{{{
 	group = _groups[delGroup.Id];
@@ -384,7 +390,7 @@ function renameGroup() { //{{{
 		groupId: parseInt(_menu_selected_id),
 		name: name,
 	}
-	socketSend(req);
+	_socket.send(req);
 } //}}}
 function renamedGroup(group) { //{{{
 	deletedGroup(group);
@@ -417,7 +423,7 @@ function selectSystem(sysId) { //{{{
 		op: "SystemEntries",
 		systemId: sysId,
 	};
-	socketSend(req);
+	_socket.send(req);
 } //}}}
 function addSystem(groupId, newSystem) { //{{{
 	// Place group in the correct, alphabetical place.
@@ -464,7 +470,7 @@ function createSystem() { //{{{
 		groupid: parseInt(_menu_selected_id),
 		name: name,
 	}
-	socketSend(req);
+	_socket.send(req);
 } //}}}
 function renameSystem() { //{{{
 	let name = prompt("New system name:");
@@ -476,7 +482,7 @@ function renameSystem() { //{{{
 		systemId: parseInt(_menu_selected_id),
 		name: name,
 	}
-	socketSend(req);
+	_socket.send(req);
 } //}}}
 function deleteSystem() { //{{{
 	let system = _systems[_menu_selected_id];
@@ -486,7 +492,7 @@ function deleteSystem() { //{{{
 		op: 'DeleteSystem',
 		systemId: parseInt(system.Id),
 	}
-	socketSend(req);
+	_socket.send(req);
 } //}}}
 function deletedSystem(system) { //{{{
 	if(_system == system.Id) {
@@ -574,7 +580,7 @@ function deleteSelectedEntries() { //{{{
 			op: "DeleteEntry",
 			entryId: parseInt($(entry).attr('x-entry-id')),
 		};
-		socketSend(req);
+		_socket.send(req);
 	});
 } //}}}
 function markSelectedEntriesSeen() { //{{{
@@ -588,7 +594,7 @@ function markSelectedEntriesSeen() { //{{{
 			op: "SeenEntry",
 			entryId: entryId,
 		};
-		socketSend(req);
+		_socket.send(req);
 	});
 } //}}}
 function deleteEntry(entryId) { //{{{
@@ -675,7 +681,7 @@ function toggleImportant(entryId) { //{{{
 			entryId: parseInt(entryId),
 			isImportant: !_entries[entryId].Important,
 		}
-		socketSend(req);
+		_socket.send(req);
 	});
 
 } //}}}
@@ -848,7 +854,7 @@ function showData(entryId) { //{{{
 		entryId: parseInt(entryId),
 	};
 	_viewTimeout = setTimeout(
-		()=>socketSend(req),
+		()=>_socket.send(req),
 		1000,
 	);
 } //}}}
@@ -879,14 +885,14 @@ function logout() { //{{{
 	localStorage.removeItem('authenticationToken');
 	location.href = 'login.html';
 } //}}}
-function indexSocketClosed() {
-	menuClose();
-	$('#connection-closed').show();
-}
 
 $(document).ready(()=>{
-	socketOnClose(indexSocketClosed);
-	socketConnect();
+	_socket = new MessSocket()
+	_socket.addHook('open', socketConnected);
+	_socket.addHook('close', socketClosed);
+	_socket.addHook('error', socketClosed);
+	_socket.addHook('message', msgHandler);
+
 	document.onkeydown = keyHandler;
 
 	new ClipboardJS('#entry-data-copy', {

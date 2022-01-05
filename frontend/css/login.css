@@ -27,6 +27,9 @@
 .widgets .widget:last-child {
   margin-bottom: 0px;
 }
+.widgets .widget.login {
+  display: none;
+}
 input {
   font-size: 20px;
   background: #c33e42;
