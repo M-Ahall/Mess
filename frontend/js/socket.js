@@ -1,8 +1,13 @@
 var _socketEndpoint = '';
 var _socket = null;
 var _socketRequestNum = 0;
+var _connectionCallbackClosed = null;
 
-function socketConnect() {
+function socketOnClose(func) {
+	_connectionCallbackClosed = func;
+}
+
+function socketAddr() {
 	let proto = '';
 	switch(location.protocol) {
 		case 'http:':  proto = 'ws';  break;
@@ -10,7 +15,11 @@ function socketConnect() {
 		default:
 			alert('Unknown protocol, aborting.');
 	}
-	_socketEndpoint = `${proto}://${location.host}/ws`
+	return `${proto}://${location.host}/ws`;
+}
+
+function socketConnect() {
+	_socketEndpoint = socketAddr();
 
 	_socket = new WebSocket(_socketEndpoint)
 	_socket.onopen = function() {
@@ -21,8 +30,8 @@ function socketConnect() {
 
 	_socket.onclose = function(e) {
 		console.log("socket close", e);
-		menuClose();
-		$('#connection-closed').show();
+		if(_connectionCallbackClosed !== null)
+			_connectionCallbackClosed();
 	}
 
 	_socket.onerror = function(e) {

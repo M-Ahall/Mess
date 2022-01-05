@@ -18,11 +18,14 @@
 		<script type="text/javascript" src="js/login.js"></script>
 	</head>
 	<body>
-
 		<div id="container">
 			<div id="sub-container">
 				<img id="logo" src="images/logo.svg">
 				<form class="widgets">
+					<div class="widget" id="connection-closed">
+						No connection to socket!
+						<div class="socket-address"></div>
+					</div>
 					<div class="widget"><input type="text"     name="username" placeholder="Username"></div>
 					<div class="widget"><input type="password" name="password" placeholder="Password"></div>
 					<div class="widget"><input type="submit" value="Login" onClick="getAuthenticationToken(); return false;"></div>
@@ -35,6 +38,7 @@
 				$('[name=username]').focus();
 			});
 
+			socketOnClose(loginSocketClosed);
 			socketConnect();
 		</script>
 	</body>

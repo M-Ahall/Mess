@@ -879,8 +879,13 @@ function logout() { //{{{
 	localStorage.removeItem('authenticationToken');
 	location.href = 'login.html';
 } //}}}
+function indexSocketClosed() {
+	menuClose();
+	$('#connection-closed').show();
+}
 
 $(document).ready(()=>{
+	socketOnClose(indexSocketClosed);
 	socketConnect();
 	document.onkeydown = keyHandler;
 

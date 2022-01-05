@@ -1,3 +1,9 @@
+function loginSocketClosed() {
+	$('.widget').hide();
+	$('#connection-closed').show();
+	$('.socket-address').html(socketAddr());
+}
+
 function getAuthenticationToken() {
 	let req = {
 		op: "Login",
@@ -8,7 +14,6 @@ function getAuthenticationToken() {
 }
 
 function msgHandler(msg) {
-	console.log(msg);
 	switch(msg.Op) {
 		case 'Login':
 			if(msg.Data.Token == '') {
