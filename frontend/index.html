@@ -21,7 +21,12 @@
 
 		<script type="text/javascript" src="js/socket.js"></script>
 		<script type="text/javascript" src="js/menu.js"></script>
-		<script type="text/javascript" src="js/index.js"></script>
+
+		<script type="text/javascript" src="js/group.js"></script>
+		<script type="text/javascript" src="js/system.js"></script>
+		<script type="text/javascript" src="js/entry.js"></script>
+		<script type="text/javascript" src="js/index_ui.js"></script>
+		<script type="text/javascript" src="js/index_mess.js"></script>
 
 		<script type="text/javascript">
 			let authenticationToken = localStorage.getItem('authenticationToken');
@@ -38,42 +43,42 @@
 			</div>
 		</div>
 
-		<div id="layout" onmouseup="resizeEntriesStop()">
+		<div id="layout" onmouseup="mess.ui.resizeEntriesStop()">
 			<div id="header">
 				<div class="title"><img src="images/logo.svg" style="height: 120px; margin-bottom: -8px;"></div>
 				<div class="controls">
 					<div style="float: left;">
 						<label class="switch">
-							<input type="checkbox" id="tail-log" checked>
+							<input type="checkbox" id="tail-log" onChange="mess.ui.storeTailLogState()" checked>
 							<span class="slider"></span>
 						</label>
 						<label for="tail-log">&nbsp;Tail log</label>
 						<div style="height: 12px;"></div>
 
 						<label class="switch">
-							<input type="checkbox" id="show-backtrace" onChange="toggleBacktrace()" checked>
+							<input type="checkbox" id="show-backtrace" onChange="mess.ui.toggleBacktrace()" checked>
 							<span class="slider"></span>
 						</label>
 						<label for="show-backtrace">&nbsp;Show backtrace</label><br>
 						<div style="height: 12px;"></div>
 
 						<label class="switch">
-							<input type="checkbox" id="show-date" onChange="toggleDate()">
+							<input type="checkbox" id="show-date" onChange="mess.ui.toggleDate()">
 							<span class="slider"></span>
 						</label>
 						<label for="show-date">&nbsp;Show date</label>
 					</div>
 					<div style="float: left; margin-left: 16px;">
-						<input type="submit" value="Toggle important" style="width: 100%; margin-bottom: 8px;" onClick="toggleImportant()"><br>
-						<input type="submit" value="Mark seen"        style="width: 100%;"                     onClick="markSelectedEntriesSeen()">
+						<input type="submit" value="Toggle important" style="width: 100%; margin-bottom: 8px;" onClick="mess.toggleEntriesImportant()"><br>
+						<input type="submit" value="Mark seen"        style="width: 100%;"                     onClick="mess.markSelectedEntriesSeen()">
 					</div>
 					<div style="float: left; margin-left: 16px;">
-						<input type="submit" value="Delete"     style="width: 100%; margin-bottom: 8px;" onClick="deleteSelectedEntries()"><br>
-						<input type="submit" value="Separator"  style="width: 100%;"                     onClick="insertSeparator()">
+						<input type="submit" value="Delete"     style="width: 100%; margin-bottom: 8px;" onClick="mess.ui.deleteSelectedEntries()"><br>
+						<input type="submit" value="Separator"  style="width: 100%;"                     onClick="let s = mess.systems[mess.ui.currSystem.id]; mess.insertSeparator(s)">
 					</div>
 					<div style="float: left; margin-left: 16px">
-						<input type="submit" value="Logout"       style="width: 100%; margin-bottom: 8px;" onClick="logout()"><br>
-						<input type="submit" value="Create group" style="width: 100%;"                     onClick="createGroup()">
+						<input type="submit" value="Logout"       style="width: 100%; margin-bottom: 8px;" onClick="mess.ui.logout()"><br>
+						<input type="submit" value="Create group" style="width: 100%;"                     onClick="mess.createGroup()">
 					</div>
 				</div>
 				<div class="notification"></div>
@@ -81,7 +86,7 @@
 
 			<div id="groups"></div>
 			<div id="entries">
-				<input type="text" id="filter" placeholder="Filter" onInput="filter()">
+				<input type="text" id="filter" placeholder="Filter" onInput="mess.ui.filter()">
 				<table class="entries">
 					<tr>
 						<th>ID</th>
@@ -102,19 +107,19 @@
 			<div id="entry-info"></div>
 			<div id="system-info"></div>
 
-			<div id="resize-entries" onmousedown="resizeEntriesStart()"></div>
+			<div id="resize-entries" onmousedown="mess.ui.resizeEntriesStart()"></div>
 		</div>
 
 		<div class="menu" x-menu="group">
-			<div class="item"           onClick="menuClose().then(renameGroup);">Rename group</div>
-			<div class="item separator" onClick="menuClose().then(deleteGroup);">Delete group</div>
-			<div class="item"           onClick="menuClose().then(createSystem);">Create system</div>
+			<div class="item"           onClick="menuClose().then(()=>mess.renameGroup());">Rename group</div>
+			<div class="item separator" onClick="menuClose().then(mess.deleteGroup(_menu_selected_id));">Delete group</div>
+			<div class="item"           onClick="menuClose().then(()=>mess.createSystem());">Create system</div>
 		</div>
 
 		<div class="menu" x-menu="system">
 			<div class="item" id="copy-log-template" onClick="menuClose()">Copy log template</div>
-			<div class="item" onClick="menuClose().then(renameSystem);">Rename system</div>
-			<div class="item" onClick="menuClose().then(deleteSystem);">Delete system</div>
+			<div class="item" onClick="menuClose().then(()=>mess.renameSystem());">Rename system</div>
+			<div class="item" onClick="menuClose().then(()=>mess.deleteSystem());">Delete system</div>
 		</div>
 
 		<div class="menu" x-menu="entry">
