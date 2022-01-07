@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const VERSION = "0.1.2";
+const VERSION = "1.0.0";
 
 var (
 	logQueue chan LogEntry
