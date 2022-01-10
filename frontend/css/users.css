@@ -1,0 +1,62 @@
+#connection-closed {
+  display: none;
+  position: fixed;
+  z-index: 4096;
+  background-color: rgba(0, 0, 0, 0.75);
+  width: 100vw;
+  height: 100vh;
+}
+#connection-closed .dialog {
+  position: fixed;
+  z-index: 8192;
+  width: 640px;
+  height: 240px;
+  background: #c32e42;
+  color: #fff;
+  font-weight: bold;
+  line-height: 240px;
+  text-align: center;
+  font-size: 32px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 5px 5px 3px 0px rgba(0, 0, 0, 0.25);
+}
+#layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 128px
+		1fr;
+  grid-template-areas: "header" "content";
+}
+#header {
+  display: grid;
+  grid-area: header;
+  background: #c32e42;
+  grid-template-columns: min-content 1fr min-content;
+  align-items: center;
+}
+#header .title {
+  margin-left: 32px;
+  grid-column: 1;
+  align-self: end;
+  overflow: hidden;
+}
+#users {
+  grid-area: content;
+  padding: 32px;
+}
+#users table.users {
+  border-collapse: collapse;
+}
+#users table.users th {
+  text-align: left;
+}
+#users table.users th,
+#users table.users td {
+  padding: 6px;
+  border: 1px solid #aaa;
+}
+h1:first-child {
+  margin-top: 0px;
+}

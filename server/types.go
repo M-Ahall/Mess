@@ -1,5 +1,16 @@
 package main
 
+type User struct {
+	Id        int
+	Username  string
+	Password  string `json:"-"`
+	Salt      string `json:"-"`
+	Token     string `json:"-"`
+	LastLogin string `db:"last_login"`
+	Active    bool
+	Admin     bool
+}
+
 type Group struct {
 	Id   int
 	Name string
@@ -171,4 +182,9 @@ type RenameSystemRequest struct {
 type RenameSystemPush struct {
 	GroupId int
 	System System
+}
+
+// Retrieves a list of users
+type UsersResponse struct {
+	Users []User
 }

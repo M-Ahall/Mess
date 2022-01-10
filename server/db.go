@@ -76,10 +76,10 @@ func dbLogin(username, password string) (token string, err error) {
 	rows.Close()
 	return
 }
-func dbAuthenticate(token string) (userId int, username string, err error) {
+func dbAuthenticate(token string) (userId int, username string, admin bool, err error) {
 	var rows *sql.Rows
 	rows, err = db.Query(`
-		SELECT id, username
+		SELECT id, username, admin
 		FROM "user"
 		WHERE
 			token = $1 AND
@@ -93,7 +93,7 @@ func dbAuthenticate(token string) (userId int, username string, err error) {
 	defer rows.Close()
 
 	if rows.Next() {
-		err = rows.Scan(&userId, &username)
+		err = rows.Scan(&userId, &username, &admin)
 	}
 	return
 }
@@ -491,6 +491,37 @@ func dbRenameSystem(systemId int, name string) (system System, groupId int, err 
 		&system.Comments,
 		&groupId,
 	)
+	return
+}
+
+func dbUsers() (users []User, err error) {
+	var rows *sqlx.Rows
+	var query string
+	var args []interface{}
+	if query, args, err = sqlx.In(`
+		SELECT
+			id,
+			Username,
+			password,
+			salt,
+			token,
+			last_login,
+			active, admin
+		FROM public."user"
+		ORDER BY
+			username ASC
+		`,
+	); err != nil { return }
+	query = db.Rebind(query)
+	rows, err = db.Queryx(query, args...)
+	if err != nil { return }
+	defer rows.Close()
+
+	for rows.Next() {
+		user := User{}
+		if err = rows.StructScan(&user); err != nil { return }
+		users = append(users, user)
+	}
 	return
 }
 

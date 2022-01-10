@@ -33,6 +33,7 @@ type WsConnection struct {
 	UUID string
 	UserId int
 	Username string
+	Admin bool
 	Conn *websocket.Conn
 	RemoteHost string
 }
@@ -117,12 +118,14 @@ func (wsConn *WsConnection) HandleRequest(requestData []byte) (resp ClientRespon
 		resp.Data = &data
 		var userId int
 		var username string
+		var admin bool
 		req := new(AuthenticationRequest)
 		if err = json.Unmarshal(requestData, req); err != nil { return }
-		userId, username, err = dbAuthenticate(req.Token)
+		userId, username, admin, err = dbAuthenticate(req.Token)
 		if err != nil { return }
 		wsConn.UserId = userId
 		wsConn.Username = username
+		wsConn.Admin = admin
 		data.Ok = wsConn.Authenticated()
 		return
 	}
@@ -273,8 +276,19 @@ func (wsConn *WsConnection) HandleRequest(requestData []byte) (resp ClientRespon
 			System: system,
 		}
 
+
+	case "Users":
+		if !wsConn.Admin {
+			err = fmt.Errorf("Login with an admin account first.")
+			return
+		}
+		data := UsersResponse{}
+		resp.Data = &data
+		data.Users, err = dbUsers()
+
 	default:
 		wsConn.log("request", "unknown: %s", clientRequest.Op)
+		err = fmt.Errorf("Unknown op '%s'", clientRequest.Op)
 		return
 	}
 

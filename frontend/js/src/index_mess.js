@@ -39,7 +39,7 @@ class Mess {
 		this.socket.send(req);
 	} //}}}
 	socketClosed(evt) { //{{{
-		ui.socketClosed();
+		this.ui.socketClosed();
 	} //}}}
 	msgHandler(evt) { //{{{
 		let msg = JSON.parse(evt.data)
