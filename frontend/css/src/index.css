@@ -33,23 +33,6 @@
 #layout.without-backtrace {
   grid-template-areas: "header   header header header" "groups   log-entries resize-entries entry-data" "groups   log-entries resize-entries entry-data" "sys-info log-entries resize-entries entry-info";
 }
-#header {
-  grid-area: header;
-  display: grid;
-  background: #c32e42;
-  grid-template-columns: min-content 1fr min-content;
-  align-items: center;
-}
-#header .title {
-  margin-left: 32px;
-  grid-column: 1;
-  align-self: end;
-  overflow: hidden;
-}
-#header .controls {
-  grid-column: 2;
-  margin-left: 32px;
-}
 #header .notification {
   width: 12px;
   height: 12px;
@@ -278,23 +261,6 @@ table.entries.date td:nth-child(2) {
 }
 #entry-backtrace-copy {
   grid-area: entry-backtrace;
-}
-label {
-  color: #f0d2d2;
-  user-select: none;
-}
-input[type=submit] {
-  background: #c72f43;
-  color: #f3cad0;
-  border: 2px solid #df7886;
-  padding: 6px 16px;
-  font-size: 14px;
-  border-radius: 8px;
-}
-input[type=submit]:hover {
-  color: #fff;
-  background: #d54f61;
-  border: 2px solid #e9a1ab;
 }
 #resize-entries {
   grid-area: resize-entries;

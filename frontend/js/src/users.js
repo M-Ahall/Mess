@@ -53,6 +53,12 @@ class MessUsers {
 
 				break;
 
+			case 'BroadcastUserCreated':
+				var user = new User(msg.Data.User);
+				this.users[user.id] = user;
+				this.addUser(user);
+				break;
+
 			default:
 				console.log(msg);
 		}
@@ -65,6 +71,17 @@ class MessUsers {
 			<td>${user.lastLoginDate}</td>
 		</tr>
 		`);
+	}
+
+	newUser() {
+		let username = prompt('Username');
+		if(username === null)
+			return;
+		let req = {
+			op: 'CreateUser',
+			username: username,
+		};
+		mess.socket.send(req);
 	}
 }
 

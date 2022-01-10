@@ -184,7 +184,16 @@ type RenameSystemPush struct {
 	System System
 }
 
-// Retrieves a list of users
+// Retrieves a list of users.
 type UsersResponse struct {
 	Users []User
+}
+
+// Creates a new user.
+type CreateUserRequest struct {
+	Username string
+}
+
+type NewUserPush struct {
+	User User
 }

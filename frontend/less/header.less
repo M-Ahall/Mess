@@ -1,0 +1,41 @@
+@import "theme.less";
+
+#header {
+	grid-area: header;
+	display: grid;
+	background: @primary;
+	grid-template-columns: min-content 1fr min-content;
+	align-items: center;
+
+	.title {
+		margin-left: 32px;
+		grid-column: 1;
+		align-self: end;
+		overflow: hidden;
+	}
+
+	.controls {
+		grid-column: 2;
+		margin-left: 32px;
+	}
+
+	input[type=submit] {
+		background: lighten(@primary, 1%);
+		color: lighten(@primary, 40%);
+		border: 2px solid lighten(@primary, 20%);
+		padding: 6px 16px;
+		font-size: 14px;
+		border-radius: 8px;
+
+		&:hover {
+			color: #fff;
+			background: lighten(@primary, 10%);
+			border: 2px solid lighten(@primary, 30%);
+		}
+	}
+
+	label {
+		color: #f0d2d2;
+		user-select: none;
+	}
+}

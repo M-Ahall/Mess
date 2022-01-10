@@ -286,6 +286,21 @@ func (wsConn *WsConnection) HandleRequest(requestData []byte) (resp ClientRespon
 		resp.Data = &data
 		data.Users, err = dbUsers()
 
+	case "CreateUser":
+		var user User
+		if !wsConn.Admin {
+			err = fmt.Errorf("Login with an admin account first.")
+			return
+		}
+		req := new(CreateUserRequest)
+		if err = json.Unmarshal(requestData, req); err != nil { return }
+		user, err = dbCreateUser(req.Username)
+		if err != nil { return }
+		bcast.Op = "BroadcastUserCreated"
+		bcast.Data = NewUserPush{
+			User: user,
+		}
+
 	default:
 		wsConn.log("request", "unknown: %s", clientRequest.Op)
 		err = fmt.Errorf("Unknown op '%s'", clientRequest.Op)

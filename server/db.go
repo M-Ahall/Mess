@@ -2,6 +2,7 @@ package main
 
 import (
 	// External
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
@@ -521,6 +522,49 @@ func dbUsers() (users []User, err error) {
 		user := User{}
 		if err = rows.StructScan(&user); err != nil { return }
 		users = append(users, user)
+	}
+	return
+}
+func dbCreateUser(username string) (user User, err error) {
+	var rows *sqlx.Rows
+	var query string
+	var args []interface{}
+	var token uuid.UUID
+
+	token, err = uuid.NewRandom()
+	if err != nil { return }
+	if query, args, err = sqlx.In(`
+		INSERT INTO public."user"(
+			username,
+			"password",
+			salt,
+			token,
+			active,
+			admin
+		)
+		VALUES(
+			$1,
+			'password not set',
+			md5(random()::text),
+			$2,
+			false,
+			false
+		)
+		RETURNING *
+		`,
+		username,
+		token.String(),
+	); err != nil {
+		return
+	}
+	query = db.Rebind(query)
+	if rows, err = db.Queryx(query, args...); err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err = rows.StructScan(&user); err != nil { return }
 	}
 	return
 }

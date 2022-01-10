@@ -29,46 +29,44 @@
 
 #layout {
 	display: grid;
-	grid-template-columns: 1fr;
+	grid-template-columns: min-content 1fr;
 	grid-template-rows:
 		128px
 		1fr;
 	grid-template-areas:
-		"header"
-		"content";
-}
-
-#header {
-	display: grid;
-	grid-area: header;
-	background: @primary;
-	grid-template-columns: min-content 1fr min-content;
-	align-items: center;
-
-	.title {
-		margin-left: 32px;
-		grid-column: 1;
-		align-self: end;
-		overflow: hidden;
-	}
+		"header header"
+		"users details";
+	height: 100vh;
 }
 
 #users {
-	grid-area: content;
-	padding: 32px;
+	grid-area: users;
+	border-right: 2px solid @primary;
 
 	table.users {
 		border-collapse: collapse;
 
 		th {
+			color: #444;
 			text-align: left;
+			border-bottom: 1px solid #000 !important;
+			background-color: #f6f6f6;
 		}
 
 		th, td {
 			padding: 6px;
 			border: 1px solid #aaa;
+			white-space: nowrap;
+
+			&:first-child { border-left:  none }
+			&:last-child  { border-right: none }
 		}
 	}
+}
+
+#details {
+	grid-area: details;
+	padding: 32px;
 }
 
 h1:first-child {

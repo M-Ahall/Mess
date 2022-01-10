@@ -24,38 +24,42 @@
 }
 #layout {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: min-content 1fr;
   grid-template-rows: 128px
 		1fr;
-  grid-template-areas: "header" "content";
-}
-#header {
-  display: grid;
-  grid-area: header;
-  background: #c32e42;
-  grid-template-columns: min-content 1fr min-content;
-  align-items: center;
-}
-#header .title {
-  margin-left: 32px;
-  grid-column: 1;
-  align-self: end;
-  overflow: hidden;
+  grid-template-areas: "header header" "users details";
+  height: 100vh;
 }
 #users {
-  grid-area: content;
-  padding: 32px;
+  grid-area: users;
+  border-right: 2px solid #c32e42;
 }
 #users table.users {
   border-collapse: collapse;
 }
 #users table.users th {
+  color: #444;
   text-align: left;
+  border-bottom: 1px solid #000 !important;
+  background-color: #f6f6f6;
 }
 #users table.users th,
 #users table.users td {
   padding: 6px;
   border: 1px solid #aaa;
+  white-space: nowrap;
+}
+#users table.users th:first-child,
+#users table.users td:first-child {
+  border-left: none;
+}
+#users table.users th:last-child,
+#users table.users td:last-child {
+  border-right: none;
+}
+#details {
+  grid-area: details;
+  padding: 32px;
 }
 h1:first-child {
   margin-top: 0px;
