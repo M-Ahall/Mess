@@ -30,7 +30,7 @@ class Entry {
 		if(data.DataBase64)
 			this.data = Base64.decode(data.Data);
 		else
-			this.data = data.data;
+			this.data = data.Data;
 
 		let match = this.timestamp.match(/^(?<date>\d{4}-\d{2}-\d{2})T(?<time>\d\d:\d\d:\d\d)\.(?<fractions>\d+)Z$/);
 		this.date = match.groups.date;
