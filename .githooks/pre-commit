@@ -1,0 +1,30 @@
+#!/bin/bash
+
+version=$(cat frontend/version)
+error=0
+
+IFS=$'\n'
+for htmlfile in frontend/*.html; do
+	for row in $(grep '"\(css\|js\)/v[0-9]\+\.[0-9]\+\.[0-9]\+/' $htmlfile)
+	do
+		rowversion=$(echo $row | sed -E -e 's#^.*(css|js)/(v[0-9]+\.[0-9]+\.[0-9]+)/.*$#\2#')
+		if [ "$version" != "$rowversion" ]; then
+			echo "$htmlfile: $row"
+			error=1
+		fi
+	done
+done
+
+if [ ! -L frontend/css/$version ]; then
+	echo "frontend/css/$version doesn't exist"
+	error=1
+fi
+
+if [ ! -L frontend/js/$version ]; then
+	echo "frontend/js/$version doesn't exist"
+	error=1
+fi
+
+if [ $error -gt 0 ]; then
+	exit 1
+fi

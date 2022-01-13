@@ -1,9 +1,9 @@
 less = $(wildcard *.less)
 _css  = $(less:.less=.css)
-css  = $(addprefix ../css/, $(_css) )
+css  = $(addprefix ../css/src/, $(_css) )
 
-../css/%.css: %.less theme.less
-	lessc $< ../css/$@
+../css/src/%.css: %.less theme.less
+	lessc $< $@
 
 all: $(css)
 
