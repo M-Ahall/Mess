@@ -45,7 +45,7 @@
 }
 #users table.users th,
 #users table.users td {
-  padding: 6px;
+  padding: 8px 12px;
   border: 1px solid #aaa;
   white-space: nowrap;
 }
@@ -57,10 +57,81 @@
 #users table.users td:last-child {
   border-right: none;
 }
+#users .user {
+  user-select: none;
+}
+#users .user.selected {
+  background-color: #eeeae4;
+}
 #details {
   grid-area: details;
   padding: 32px;
 }
+.fields {
+  display: none;
+  grid-template-columns: min-content 1fr;
+  align-items: center;
+}
+.fields div {
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
+.fields div:nth-child(odd) {
+  margin-right: 8px;
+}
+.fields div:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+.fields div:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+.fields div:nth-child(3) {
+  grid-column: 1;
+  grid-row: 2;
+}
+.fields div:nth-child(4) {
+  grid-column: 2;
+  grid-row: 2;
+}
+.fields div:nth-child(5) {
+  grid-column: 1;
+  grid-row: 3;
+}
+.fields div:nth-child(6) {
+  grid-column: 2;
+  grid-row: 3;
+}
+.fields div:nth-child(7) {
+  grid-column: 1;
+  grid-row: 4;
+}
+.fields div:nth-child(8) {
+  grid-column: 2;
+  grid-row: 4;
+}
+.fields div:nth-child(9) {
+  grid-column: 1;
+  grid-row: 5;
+}
+.fields div:nth-child(10) {
+  grid-column: 2;
+  grid-row: 5;
+}
+.fields input[type="text"] {
+  padding: 8px;
+}
+#username {
+  font-weight: bold;
+}
 h1:first-child {
   margin-top: 0px;
+}
+#user-updated {
+  display: none;
+  padding: 10px;
+  border-radius: 4px;
+  color: #436a2a;
+  background-color: #dcf2ce;
 }

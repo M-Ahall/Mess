@@ -2,6 +2,7 @@ package main
 
 import (
 	// Standard
+	"fmt"
 	"net/http"
 )
 
@@ -19,7 +20,7 @@ func NewConnectionManager() (cm ConnectionManager) {
 // NewConnection creates a new connection, which is assigned a UUIDv4 for
 // identification. This is then put into the connection collection.
 func (cm *ConnectionManager) NewConnection(w http.ResponseWriter, r *http.Request) (*WsConnection) {
-	wsConn, err := NewWsConnection(w, r)
+	wsConn, err := NewWsConnection(cm, w, r)
 	if err != nil {
 		wsConn.log("upgrade", "%s", err)
 		return nil
@@ -69,6 +70,14 @@ func (cm *ConnectionManager) BroadcastLoop() {
 		msg := <-cm.broadcastQueue
 		for _, wsConn := range cm.connections {
 			cm.Send(wsConn, msg)
+		}
+	}
+}
+
+func (cm *ConnectionManager) Kill(userId int) {
+	for _, wsConn := range cm.connections {
+		if wsConn.UserId == userId {
+			cm.Prune(wsConn, fmt.Errorf("Connection killed"))
 		}
 	}
 }

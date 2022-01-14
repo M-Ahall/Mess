@@ -36,6 +36,7 @@ type WsConnection struct {
 	Admin bool
 	Conn *websocket.Conn
 	RemoteHost string
+	manager *ConnectionManager
 }
 
 func validateOrigin(r *http.Request) bool {
@@ -46,7 +47,7 @@ func validateOrigin(r *http.Request) bool {
 	}
 	return host == config.CORS.OriginDomain
 }
-func NewWsConnection(w http.ResponseWriter, r *http.Request) (conn WsConnection, err error) {
+func NewWsConnection(manager *ConnectionManager, w http.ResponseWriter, r *http.Request) (conn WsConnection, err error) {
 	var newUUID uuid.UUID
 
 	// UUIDs are used to identify the connection.
@@ -54,6 +55,7 @@ func NewWsConnection(w http.ResponseWriter, r *http.Request) (conn WsConnection,
 	conn.UUID = newUUID.String()
 	conn.UserId = 0
 	conn.Username = ""
+	conn.manager = manager
 
 	// Remote IP address of the connection.
 	// Using X-Forwarded-For header if behind web proxy.
@@ -278,20 +280,14 @@ func (wsConn *WsConnection) HandleRequest(requestData []byte) (resp ClientRespon
 
 
 	case "Users":
-		if !wsConn.Admin {
-			err = fmt.Errorf("Login with an admin account first.")
-			return
-		}
+		if err = wsConn.ValidateAdmin(); err != nil { return }
 		data := UsersResponse{}
 		resp.Data = &data
 		data.Users, err = dbUsers()
 
 	case "CreateUser":
+		if err = wsConn.ValidateAdmin(); err != nil { return }
 		var user User
-		if !wsConn.Admin {
-			err = fmt.Errorf("Login with an admin account first.")
-			return
-		}
 		req := new(CreateUserRequest)
 		if err = json.Unmarshal(requestData, req); err != nil { return }
 		user, err = dbCreateUser(req.Username)
@@ -300,6 +296,53 @@ func (wsConn *WsConnection) HandleRequest(requestData []byte) (resp ClientRespon
 		bcast.Data = NewUserPush{
 			User: user,
 		}
+
+	case "UpdateUser":
+		var user User
+		if err = wsConn.ValidateAdmin(); err != nil { return }
+		req := new(UpdateUserRequest)
+		if err = json.Unmarshal(requestData, req); err != nil { return }
+
+		// User will have to relogin, as changes to active admin or
+		// password probably requires it anyways.
+		wsConn.manager.Kill(req.UserId)
+
+		user.Id = req.UserId
+		user.Password = req.Password
+		user.Active = req.Active
+		user.Admin = req.Admin
+		user, err = dbUpdateUser(user)
+		if err != nil { return }
+		bcast.Op = "BroadcastUserUpdated"
+		bcast.Data = UpdateUserPush{
+			User: user,
+		}
+
+	case "RemoveUser":
+		if err = wsConn.ValidateAdmin(); err != nil { return }
+		req := new(RemoveUserRequest)
+		if err = json.Unmarshal(requestData, req); err != nil { return }
+
+		// User is removed, existing connections should of course
+		// be killed.
+		wsConn.manager.Kill(req.UserId)
+
+		err = dbRemoveUser(req.UserId)
+		if err != nil { return }
+		bcast.Op = "BroadcastUserRemoved"
+		bcast.Data = RemoveUserPush{ UserId: req.UserId }
+
+	case "LogoutUser":
+		if err = wsConn.ValidateAdmin(); err != nil { return }
+		req := new(LogoutUserRequest)
+		if err = json.Unmarshal(requestData, req); err != nil { return }
+		wsConn.manager.Kill(req.UserId)
+		err = dbLogoutUser(req.UserId)
+		if err != nil { return }
+		data := LogoutUserResponse{
+			UserId: req.UserId,
+		}
+		resp.Data = &data
 
 	default:
 		wsConn.log("request", "unknown: %s", clientRequest.Op)
@@ -320,6 +363,11 @@ func (wsConn WsConnection) SystemEntries(sysId int) (entries []*LogEntry, err er
 
 	return
 }
-
+func (wsConn WsConnection) ValidateAdmin() error {
+	if !wsConn.Admin {
+		return fmt.Errorf("Login with an admin account first.")
+	}
+	return nil
+}
 
 // vim: foldmethod=syntax foldnestmax=1

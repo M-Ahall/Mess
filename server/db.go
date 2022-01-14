@@ -7,9 +7,12 @@ import (
 	_ "github.com/lib/pq"
 
 	// Standard
+	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
+	"math/rand"
 	"strings"
 )
 
@@ -566,6 +569,81 @@ func dbCreateUser(username string) (user User, err error) {
 	for rows.Next() {
 		if err = rows.StructScan(&user); err != nil { return }
 	}
+	return
+}
+func dbUpdateUser(user User) (updatedUser User, err error) {
+	var salt string
+	var pass string
+	var token uuid.UUID
+	var users []User
+
+	token, _ = uuid.NewRandom()
+
+	if user.Password != "" {
+		saltBytes := make([]byte, 16)
+		rand.Read(saltBytes)
+		salt = hex.EncodeToString(saltBytes)
+		saltedPass := salt + user.Password
+		passBytes := sha256.Sum256([]byte(saltedPass))
+		pass = hex.EncodeToString(passBytes[:])
+	}
+
+	err = db.Select(&users, `
+		UPDATE public.user
+		SET
+			active=$2,
+			admin=$3,
+			token=$6,
+			salt=CASE
+				WHEN $5='' THEN "salt"
+				ELSE            $4
+			END,
+			password=CASE
+				WHEN $5='' THEN "password"
+				ELSE            $5
+			END
+		WHERE
+			id=$1
+		RETURNING *`,
+		user.Id,
+		user.Active,
+		user.Admin,
+		salt,
+		pass,
+		token.String(),
+	)
+	if err != nil { return }
+	updatedUser = users[0]
+	return
+}
+func dbRemoveUser(userId int) (err error) {
+	var rows *sql.Rows
+	rows, err = db.Query(`
+		DELETE FROM public.user
+		WHERE
+			id=$1`,
+		userId,
+	)
+	if err != nil { return }
+	rows.Close()
+	return
+}
+func dbLogoutUser(userId int) (err error) {
+	var token uuid.UUID
+	var rows *sql.Rows
+	token, _ = uuid.NewRandom()
+	rows, err = db.Query(`
+		UPDATE public.user
+		SET
+			token=$2
+		WHERE
+			id=$1
+		`,
+		userId,
+		token.String(),
+	)
+	if err != nil { return }
+	rows.Close()
 	return
 }
 

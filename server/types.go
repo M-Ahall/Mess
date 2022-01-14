@@ -197,3 +197,33 @@ type CreateUserRequest struct {
 type NewUserPush struct {
 	User User
 }
+
+// Updates a user.
+type UpdateUserRequest struct {
+	UserId int
+	Password string
+	Active bool
+	Admin bool
+}
+
+type UpdateUserPush struct {
+	User User
+}
+
+// Removes a user.
+type RemoveUserRequest struct {
+	UserId int
+}
+
+type RemoveUserPush struct {
+	UserId int
+}
+
+// Force a logout/login for a user
+type LogoutUserRequest struct {
+	UserId int
+}
+
+type LogoutUserResponse struct {
+	UserId int
+}

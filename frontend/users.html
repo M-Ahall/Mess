@@ -9,11 +9,13 @@
 		<link rel="stylesheet" href="css/v1.0.1/template.css">
 		<link rel="stylesheet" href="css/v1.0.1/switch.css">
 		<link rel="stylesheet" href="css/v1.0.1/header.css">
+		<link rel="stylesheet" href="css/v1.0.1/menu.css">
 		<link rel="stylesheet" href="css/v1.0.1/users.css">
 
 		<script type="text/javascript" src="js/v1.0.1/lib/jquery-3.6.0.min.js"></script>
 
 		<script type="text/javascript" src="js/v1.0.1/socket.js"></script>
+		<script type="text/javascript" src="js/v1.0.1/menu.js"></script>
 
 		<script type="text/javascript" src="js/v1.0.1/user.js"></script>
 		<script type="text/javascript" src="js/v1.0.1/users.js"></script>
@@ -53,10 +55,38 @@
 			</div>
 
 			<div id="details">
-				Username: <input type="tetx"><br>
-				Active <input type="checkbox"><br>
-				Admin <input type="checkbox"><br>
+				<div class="fields">
+					<div>Username</div>
+					<div id="username"></div>
+					<div>Password</div>
+					<div><input type="text" id="password" placeholder="Empty - keep current"></div>
+					<div style="margin-top: 16px">Active</div>
+					<div style="margin-top: 16px">
+						<label class="switch">
+							<input type="checkbox" id="active" checked>
+							<span class="slider"></span>
+						</label>
+					</div>
+					<div>Adminstrator</div>
+					<div>
+						<label class="switch">
+							<input type="checkbox" id="admin" checked>
+							<span class="slider"></span>
+						</label>
+					</div>
+					<div style="margin-top: 16px">
+						<button class="on-white" onClick="mess.updateUser()">Update</button>
+					</div>
+					<div style="margin-top: 16px">
+						<span id="user-updated">User updated</span>
+					</div>
+				</div>
 			</div>
+		</div>
+
+		<div class="menu" x-menu="user">
+			<div class="item" onClick="menuClose().then(()=>mess.removeUser());">Remove user</div>
+			<div class="item" onClick="menuClose().then(()=>mess.logoutUser());">Force logout</div>
 		</div>
 	</body>
 </html>
