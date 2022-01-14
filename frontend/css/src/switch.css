@@ -45,3 +45,28 @@ input:focus + .slider {
 input:checked + .slider:before {
   transform: translateX(19px);
 }
+button {
+  background: #c72f43;
+  color: #f3cad0;
+  border: 2px solid #df7886;
+  padding: 6px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+button:hover {
+  color: #fff;
+  background: #d54f61;
+  border: 2px solid #e9a1ab;
+}
+button.on-white {
+  background: #fdf8f9;
+  color: #c32e42;
+  border: 2px solid #df7886;
+  padding: 6px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+}
+button.on-white:hover {
+  background: #fcf4f5;
+  border: 2px solid #c32e42;
+}

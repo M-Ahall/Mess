@@ -43,6 +43,9 @@
 .menu[x-menu] .close:hover {
   color: #c32e42;
 }
+[x-menu-id] {
+  color: #555;
+}
 [x-menu-id]:hover {
-  color: #c32e42;
+  color: #000;
 }
