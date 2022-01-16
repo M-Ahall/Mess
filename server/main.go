@@ -157,6 +157,7 @@ func logEntryLoop() {
 
 		// Broadcast for all connected users to receive.
 		msg := ClientResponse{
+			Version: VERSION,
 			Op: "LogEntry",
 			Data: LogEntryPush{
 				Entry: logEntry,

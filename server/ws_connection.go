@@ -101,6 +101,8 @@ func (wsConn *WsConnection) HandleRequest(requestData []byte) (resp ClientRespon
 	// When a response to a request is made, request op and id is mirrored.
 	resp.RequestId = clientRequest.RequestId
 	resp.Op = clientRequest.Op
+	resp.Version = VERSION
+	bcast.Version = VERSION
 
 	// Only two ops is allowed unauthenticated - authentication ops.
 	if clientRequest.Op == "Login" {

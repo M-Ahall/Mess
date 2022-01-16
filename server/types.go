@@ -50,6 +50,7 @@ type ClientResponse struct {
 	Op        string
 	RequestId string `json:",omitempty"`
 	Error     string `json:",omitempty"`
+	Version   string
 	Data      interface{}
 }
 

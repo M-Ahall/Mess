@@ -1,4 +1,5 @@
 class MessSocket {
+	version = 'v1.1.0';
 	socket;
 	endpoint = '';
 	hooks = {};
@@ -28,10 +29,16 @@ class MessSocket {
 		this.socket = new WebSocket(this.endpoint);
 
 		// Call the hooks for each event.
-		this.socket.onopen    = (evt)=>this.hooks.open.forEach(hook=>hook(evt));
-		this.socket.onclose   = (evt)=>this.hooks.close.forEach(hook=>hook(evt));
-		this.socket.onerror   = (evt)=>this.hooks.error.forEach(hook=>hook(evt));
-		this.socket.onmessage = (evt)=>this.hooks.message.forEach(hook=>hook(evt));
+		this.socket.onopen = (evt)=>
+			this.hooks.open.forEach(hook=>hook(evt));
+
+		this.socket.onclose = (evt)=>
+			this.hooks.close.forEach(hook=>hook(evt));
+
+		this.socket.onerror = (evt)=>
+			this.hooks.error.forEach(hook=>hook(evt));
+
+		this.socket.onmessage = (evt)=>this.onMessage(evt);
 	}
 
 	addHook(type, func) {
@@ -46,5 +53,17 @@ class MessSocket {
 		req.requestId = this.requestNum.toString();
 		//req.requestId = crypto.randomUUID();
 		this.socket.send(JSON.stringify(req));
+	}
+
+	onMessage(evt) {
+		let msg = JSON.parse(evt.data)
+		if(msg.Version !== this.version) {
+			alert(
+				`Frontend version ${this.version} != `+
+				`server version ${msg.Version}`,
+			);
+			return;
+		}
+		this.hooks.message.forEach(hook=>hook(msg));
 	}
 }

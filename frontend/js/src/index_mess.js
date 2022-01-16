@@ -41,9 +41,7 @@ class Mess {
 	socketClosed(evt) { //{{{
 		this.ui.socketClosed();
 	} //}}}
-	msgHandler(evt) { //{{{
-		let msg = JSON.parse(evt.data)
-
+	msgHandler(msg) { //{{{
 		if(msg.Error) {
 			alert(msg.Error);
 			return;

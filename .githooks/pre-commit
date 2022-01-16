@@ -25,6 +25,15 @@ if [ ! -L frontend/js/$version ]; then
 	error=1
 fi
 
+socket=$( \
+	grep -E "^\s*version\s*=\s*[\"']v[0-9]+\.[0-9]+\.[0-9]+[\"']" frontend/js/src/socket.js |
+	sed -E -e "s/.*[\"'](v[0-9]+\.[0-9]+\.[0-9]+)[\"'].*/\1/" \
+)
+if [ "$version" != "$socket" ]; then
+	echo "frontend/js/src/socket.js has wrong version ($socket != $version)"
+	exit 1
+fi
+
 if [ $error -gt 0 ]; then
 	exit 1
 fi

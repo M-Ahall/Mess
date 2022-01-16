@@ -20,8 +20,7 @@ function getAuthenticationToken() {
 	_socket.send(req);
 }
 
-function msgHandler(evt) {
-	let msg = JSON.parse(evt.data)
+function msgHandler(msg) {
 	switch(msg.Op) {
 		case 'Login':
 			if(msg.Data.Token == '') {
