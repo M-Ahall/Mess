@@ -3,6 +3,9 @@
 version=$(cat frontend/version)
 error=0
 
+# ----------
+# HTML files
+# ----------
 IFS=$'\n'
 for htmlfile in frontend/*.html; do
 	for row in $(grep '"\(css\|js\)/v[0-9]\+\.[0-9]\+\.[0-9]\+/' $htmlfile)
@@ -25,13 +28,28 @@ if [ ! -L frontend/js/$version ]; then
 	error=1
 fi
 
+# ---------
+# Socket JS
+# ---------
 socket=$( \
 	grep -E "^\s*version\s*=\s*[\"']v[0-9]+\.[0-9]+\.[0-9]+[\"']" frontend/js/src/socket.js |
 	sed -E -e "s/.*[\"'](v[0-9]+\.[0-9]+\.[0-9]+)[\"'].*/\1/" \
 )
 if [ "$version" != "$socket" ]; then
 	echo "frontend/js/src/socket.js has wrong version ($socket != $version)"
-	exit 1
+	error=1
+fi
+
+# -----------
+# Mess server
+# -----------
+server=$( \
+	grep -E "^\s*const VERSION\s*=\s*[\"']v[0-9]+\.[0-9]+\.[0-9]+[\"']" server/main.go |
+	sed -E -e "s/.*[\"'](v[0-9]+\.[0-9]+\.[0-9]+)[\"'].*/\1/" \
+)
+if [ "$version" != "$server" ]; then
+	echo "server/main.go has wrong version ($server != $version)"
+	error=1
 fi
 
 if [ $error -gt 0 ]; then
