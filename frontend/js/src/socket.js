@@ -1,5 +1,5 @@
 class MessSocket {
-	version = 'v1.1.0';
+	version = 'v1.2.0';
 	socket;
 	endpoint = '';
 	hooks = {};
